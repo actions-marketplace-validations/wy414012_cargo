@@ -8,6 +8,31 @@
 - Simplified implementation by using `@actions/core` and `@actions/exec` directly
 - Updated all dependencies to latest versions
 
+### Added
+- Automatic `cross` installation when `use-cross: true` is enabled
+- Support for multiple platforms (Linux, macOS, Windows) and architectures (x86_64, aarch64)
+
+### Fixed
+- Fixed CI/CD workflow that was failing due to npm registry authentication issues
+- Removed deprecated `::add-matcher::` command
+- Migrated ESLint configuration to v9 format
+- Removed private npm registry configuration
+- Fixed `use-cross: true` functionality with automatic cross installation
+
+### Technical Details
+- Replaced `@actions-rs/core` with native `@actions/exec` and `@actions/tool-cache`
+- Added `ensureCrossInstalled()` function to download and install cross automatically
+- Updated `@zeit/ncc` to `@vercel/ncc`
+- Updated TypeScript to 5.7.2
+- Migrated from `.eslintrc.json` to `eslint.config.mjs`
+- Updated `package.json` dependencies and devDependencies
+
+### Changed
+- Updated Node.js runtime from `node12` to `node20` (fixes deprecation warnings)
+- Removed dependency on `@actions-rs/core` which required private GitHub registry access
+- Simplified implementation by using `@actions/core` and `@actions/exec` directly
+- Updated all dependencies to latest versions
+
 ### Fixed
 - Fixed CI/CD workflow that was failing due to npm registry authentication issues
 - Removed deprecated `::add-matcher::` command
