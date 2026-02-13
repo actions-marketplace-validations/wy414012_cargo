@@ -7,9 +7,11 @@
 - Removed dependency on `@actions-rs/core` which required private GitHub registry access
 - Simplified implementation by using `@actions/core` and `@actions/exec` directly
 - Updated all dependencies to latest versions
+- Changed `cross` installation to use `.tar.gz` format for all platforms (consistently with official releases)
 
 ### Added
 - Automatic `cross` installation when `use-cross: true` is enabled
+- Dynamic `cross` version detection - always installs the latest version from GitHub Releases
 - Support for multiple platforms (Linux, macOS, Windows) and architectures (x86_64, aarch64)
 
 ### Fixed
@@ -22,6 +24,7 @@
 ### Technical Details
 - Replaced `@actions-rs/core` with native `@actions/exec` and `@actions/tool-cache`
 - Added `ensureCrossInstalled()` function to download and install cross automatically
+- Added `getLatestCrossVersion()` to query GitHub API for the latest release
 - Updated `@zeit/ncc` to `@vercel/ncc`
 - Updated TypeScript to 5.7.2
 - Migrated from `.eslintrc.json` to `eslint.config.mjs`

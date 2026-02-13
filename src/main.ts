@@ -4,8 +4,45 @@ import * as fs from "fs";
 import * as core from "@actions/core";
 import * as exec from "@actions/exec";
 import * as tc from "@actions/tool-cache";
+import * as https from "https";
 
 import * as input from "./input";
+
+async function getLatestCrossVersion(): Promise<string> {
+    return new Promise((resolve, reject) => {
+        const options = {
+            hostname: "api.github.com",
+            path: "/repos/cross-rs/cross/releases/latest",
+            method: "GET",
+            headers: {
+                "User-Agent": "actions-rs/cargo",
+            },
+        };
+
+        const request = https.request(options, (res) => {
+            let data = "";
+            res.on("data", (chunk) => {
+                data += chunk;
+            });
+            res.on("end", () => {
+                try {
+                    const release = JSON.parse(data);
+                    const version = release.tag_name; // e.g., "v0.2.5"
+                    resolve(version);
+                } catch (error) {
+                    reject(error);
+                }
+            });
+        });
+
+        request.on("error", reject);
+        request.setTimeout(10000, () => {
+            request.destroy();
+            reject(new Error("Request timeout"));
+        });
+        request.end();
+    });
+}
 
 async function ensureCrossInstalled(): Promise<void> {
     try {
@@ -15,6 +52,9 @@ async function ensureCrossInstalled(): Promise<void> {
     } catch {
         core.info("cross not found, installing...");
     }
+
+    const version = await getLatestCrossVersion();
+    core.info(`Latest cross version: ${version}`);
 
     const platform = process.platform;
     const arch = process.arch;
@@ -29,14 +69,12 @@ async function ensureCrossInstalled(): Promise<void> {
     }
 
     let url: string;
-    const version = "latest";
-
     if (platform === "win32") {
-        url = `https://github.com/cross-rs/cross/releases/${version}/download/cross-${crossArch}-pc-windows-msvc.zip`;
+        url = `https://github.com/cross-rs/cross/releases/download/${version}/cross-${crossArch}-pc-windows-msvc.tar.gz`;
     } else if (platform === "darwin") {
-        url = `https://github.com/cross-rs/cross/releases/${version}/download/cross-${crossArch}-apple-darwin.tar.gz`;
+        url = `https://github.com/cross-rs/cross/releases/download/${version}/cross-${crossArch}-apple-darwin.tar.gz`;
     } else if (platform === "linux") {
-        url = `https://github.com/cross-rs/cross/releases/${version}/download/cross-${crossArch}-unknown-linux-gnu.tar.gz`;
+        url = `https://github.com/cross-rs/cross/releases/download/${version}/cross-${crossArch}-unknown-linux-gnu.tar.gz`;
     } else {
         throw new Error(`Unsupported platform: ${platform}`);
     }
@@ -44,17 +82,12 @@ async function ensureCrossInstalled(): Promise<void> {
     core.info(`Downloading cross from ${url}`);
     const downloadPath = await tc.downloadTool(url);
 
-    let extractedPath: string;
-    if (url.endsWith(".zip")) {
-        extractedPath = await tc.extractZip(downloadPath);
-    } else {
-        extractedPath = await tc.extractTar(downloadPath);
-    }
+    const extractedPath = await tc.extractTar(downloadPath);
 
     const cachePath = await tc.cacheDir(extractedPath, "cross", version);
     core.addPath(cachePath);
 
-    core.info("cross installed successfully");
+    core.info(`cross ${version} installed successfully`);
 }
 
 export async function run(actionInput: input.Input): Promise<void> {
