@@ -8,6 +8,10 @@ import * as https from "https";
 
 import * as input from "./input";
 
+interface GitHubRelease {
+    tag_name: string;
+}
+
 async function getLatestCrossVersion(): Promise<string> {
     return new Promise((resolve, reject) => {
         const options = {
@@ -26,16 +30,18 @@ async function getLatestCrossVersion(): Promise<string> {
             });
             res.on("end", () => {
                 try {
-                    const release = JSON.parse(data);
+                    const release = JSON.parse(data) as GitHubRelease;
                     const version = release.tag_name; // e.g., "v0.2.5"
                     resolve(version);
                 } catch (error) {
-                    reject(error);
+                    reject(error instanceof Error ? error : new Error(String(error)));
                 }
             });
         });
 
-        request.on("error", reject);
+        request.on("error", (error) => {
+            reject(error instanceof Error ? error : new Error(String(error)));
+        });
         request.setTimeout(10000, () => {
             request.destroy();
             reject(new Error("Request timeout"));

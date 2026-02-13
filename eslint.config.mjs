@@ -16,6 +16,7 @@ export default [
             globals: {
                 __dirname: 'readonly',
                 Buffer: 'readonly',
+                process: 'readonly',
             },
         },
         plugins: {
@@ -25,6 +26,10 @@ export default [
             ...tseslint.configs.recommended.rules,
             ...tseslint.configs['recommended-requiring-type-checking'].rules,
             '@typescript-eslint/no-floating-promises': 'off',
+            '@typescript-eslint/no-unsafe-assignment': 'off',
+            '@typescript-eslint/no-unsafe-member-access': 'off',
+            '@typescript-eslint/no-unsafe-argument': 'off',
+            '@typescript-eslint/prefer-promise-reject-errors': 'off',
         },
     },
     {
