@@ -1,13 +1,12 @@
 # Rust `cargo` Action
 
-[![Sponsoring](https://img.shields.io/badge/Support%20it-Say%20%22Thank%20you!%22-blue)](https://actions-rs.github.io/#sponsoring)
 ![MIT licensed](https://img.shields.io/badge/license-MIT-blue.svg)
-[![Gitter](https://badges.gitter.im/actions-rs/community.svg)](https://gitter.im/actions-rs/community)
 ![Continuous integration](https://github.com/actions-rs/cargo/workflows/Continuous%20integration/badge.svg)
-![Dependabot enabled](https://api.dependabot.com/badges/status?host=github&repo=actions-rs/toolchain)
 
 This GitHub Action runs specified [`cargo`](https://github.com/rust-lang/cargo)
 command on a Rust language project.
+
+> **Note:** This is a maintained fork of the original [actions-rs/cargo](https://github.com/actions-rs/cargo) project, which is no longer maintained. This version updates dependencies to modern versions and fixes deprecation warnings.
 
 **Table of Contents**
 
@@ -31,11 +30,9 @@ jobs:
     name: Rust project
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions-rs/toolchain@v1
-        with:
-          toolchain: stable
-      - uses: actions-rs/cargo@v1
+      - uses: actions/checkout@v5
+      - uses: wy414012/toolchain@master
+      - uses: wy414012/cargo@master
         with:
           command: build
           args: --release --all-features
@@ -55,10 +52,8 @@ jobs:
     name: Rust project
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions-rs/toolchain@v1
-        with:
-          toolchain: stable
+      - uses: actions/checkout@v6
+      - uses: wy414012/toolchain@master
       - run: cargo build --release --all-features
 ```
 
@@ -81,7 +76,7 @@ Why would you want to use this Action instead:
 By default this Action will call whatever `cargo` binary is available
 in the current [virtual environment](https://help.github.com/en/articles/software-in-virtual-environments-for-github-actions).
 
-You can use [`actions-rs/toolchain`](https://github.com/actions-rs/toolchain)
+You can use [`dtolnay/rust-toolchain`](https://github.com/dtolnay/rust-toolchain)
 to install specific Rust toolchain with `cargo` included.
 
 ## Cross-compilation
@@ -104,12 +99,10 @@ jobs:
     name: Linux ARMv7
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions-rs/toolchain@v1
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
         with:
-          toolchain: stable
-          target: armv7-unknown-linux-gnueabihf
-          override: true
+          targets: armv7-unknown-linux-gnueabihf
       - uses: actions-rs/cargo@v1
         with:
           use-cross: true

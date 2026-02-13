@@ -1,4 +1,26 @@
 # Changelog
+
+## [1.1.0] - 2026-02-13
+
+### Changed
+- Updated Node.js runtime from `node12` to `node20` (fixes deprecation warnings)
+- Removed dependency on `@actions-rs/core` which required private GitHub registry access
+- Simplified implementation by using `@actions/core` and `@actions/exec` directly
+- Updated all dependencies to latest versions
+
+### Fixed
+- Fixed CI/CD workflow that was failing due to npm registry authentication issues
+- Removed deprecated `::add-matcher::` command
+- Migrated ESLint configuration to v9 format
+- Removed private npm registry configuration
+
+### Technical Details
+- Replaced `@actions-rs/core` with native `@actions/exec`
+- Updated `@zeit/ncc` to `@vercel/ncc`
+- Updated TypeScript to 5.7.2
+- Migrated from `.eslintrc.json` to `eslint.config.mjs`
+- Updated `package.json` dependencies and devDependencies
+
 All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
